@@ -5,6 +5,18 @@ document.body.style.cursor = "none";
 document.body.style.background = "#ffffff";
 
 // =======================
+// NEXUS BRIDGE (IMPORTANT)
+// =======================
+function nexusMouseMove(x, y) {
+    const evt = new MouseEvent("mousemove", {
+        clientX: x,
+        clientY: y,
+        bubbles: true
+    });
+    document.dispatchEvent(evt);
+}
+
+// =======================
 // AUTO CONNECT BUTTON
 // =======================
 const connectBtn = document.createElement("button");
@@ -91,6 +103,20 @@ function animateCursor() {
     light.style.left = (currentX - 100) + "px";
     light.style.top = (currentY - 100) + "px";
 
+    // 🔥 MAKE NEXUS FX WORK
+    nexusMouseMove(currentX, currentY);
+
+    // 🔥 HOVER SIMULATION
+    const hoverEl = document.elementFromPoint(currentX, currentY);
+    if (hoverEl) {
+        hoverEl.dispatchEvent(new MouseEvent("mouseover", {
+            bubbles: true,
+            clientX: currentX,
+            clientY: currentY
+        }));
+    }
+
+    // TRAIL DOT
     const dot = document.createElement("div");
     Object.assign(dot.style, {
         position: "fixed",
@@ -169,9 +195,11 @@ function clickSelected() {
 
     const el = buttons[selectedIndex];
 
-    el.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
-    el.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
-    el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    ["mousedown", "mouseup", "click"].forEach(type => {
+        el.dispatchEvent(new MouseEvent(type, {
+            bubbles: true
+        }));
+    });
 
     selectedIndex = 0;
     highlightSelected();
@@ -184,9 +212,13 @@ function cursorClick() {
     const el = document.elementFromPoint(currentX, currentY);
     if (!el) return;
 
-    el.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
-    el.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
-    el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    ["mousedown", "mouseup", "click"].forEach(type => {
+        el.dispatchEvent(new MouseEvent(type, {
+            bubbles: true,
+            clientX: currentX,
+            clientY: currentY
+        }));
+    });
 
     cursor.style.background = "white";
     setTimeout(() => cursor.style.background = "cyan", 100);
@@ -272,5 +304,3 @@ connectBtn.onclick = async () => {
         }
     }
 };
-
-
